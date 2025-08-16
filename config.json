@@ -1,0 +1,32 @@
+{
+    "__README__": "Default values for helper scripts. Details can be found in the README.",
+    "dataCollectionOptions": {
+        "decisionModels": [["none"]],
+        "jobUpdateFrequency": 5,
+        "numParallelSimJobs": 1,
+        "numSeeds": 100,
+        "plots": ["deaths", "giniCoefficient", "happiness", "lifeExpectancy", "population", "sickness", "tradeVolume", "ttl", "wealth"],
+        "plotStatistic": "mean",
+        "plotTimesteps": 1000,
+        "pythonAlias": "python"
+    },
+    "chesstopiaOptions": {
+        "__README__": "Default values for Chesstopia simulation provided here. Details can be found in the README.",
+        "boardHeight": 8,
+        "boardWidth": 8,
+        "debugMode": ["none"],
+        "experimentalGroup": null,
+        "headlessMode": false,
+        "interfaceHeight": 1400,
+        "interfaceWidth": 1200,
+        "keepAlivePostExtinction": false,
+        "keepAliveAtEnd": false,
+        "logfile": "log.json",
+        "logfileFormat": "json",
+        "profileMode": false,
+        "screenshots": false,
+        "seed": -1,
+        "startingPosition": "classical",
+        "timesteps": 1000
+    }
+}

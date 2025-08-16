@@ -1,0 +1,139 @@
+CHESSTOPIA
+
+Python implementation of the Chesstopia agent-based computational model.
+
+Requirements:
+Python 3
+
+Optional Dependencies:
+Matplotlib
+TkInter
+
+Usage:
+python chesstopia.py
+
+Makefile Options:
+make clean
+    Clean up working files and logs created by the software.
+    Note: This will remove any JSON files created by the other make options.
+
+make data
+    Run a number of random seeds comparing selected decision models.
+    Note: Results will be saved in the data subdirectory.
+
+make plots
+    Generate graph plots from any JSON files in the data subdirectory.
+    Note: Plots are dependent on a dataset existing and will create it if necessary.
+
+make seeds
+    Generate a set of random seeds comparing selected decision models.
+    Note: Results will be saved in the data subdirectory.
+
+make setup
+    Change preconfigured settings for the system Python alias.
+    Note: Changed settings may alter Makefile and configuration file in-place.
+
+make test
+    Run the simulation using the default config.json file and storing a local log in the log.json file.
+
+JSON Configuration File Options:
+The simulation provides a default set of options in a dictionary in the chesstopia.py file.
+A JSON configuration file can be passed to the simulation, overwriting the default configuration, with the --conf option.
+
+boardHeight: int
+    Set the height in squares of the chessboard.
+    Default: 8
+
+boardWidth: int
+    Set the width in squares of the chessboard.
+    Default: 8
+
+debugMode: [string, ...]
+    Set the debug printing mode.
+    Options: "agent", "all", "board", "chesstopia", "none"
+    Default: ["none"]
+
+experimentalGroup: string
+    Set the experimental group of agents under study for finer-grained logging.
+    Options: None
+    Note: Add an integer after "disease" such as "disease1" to track a specific disease.
+    Default: null
+
+headlessMode: bool
+    Set whether the GUI is enabled.
+    Default: false
+
+interfaceHeight: int
+    Set number of pixels for GUI height.
+    Note: Values below zero will cause the interface to fit to 1/2 total display height.
+    Default: 1000
+
+interfaceWidth: int
+    Set number of pixels for GUI width.
+    Default: 900
+    Note: Values below zero will cause the interface to fit to 1/2 total display width.
+
+logfile: path
+    Set the path of the log file.
+    Default: null
+
+logfileFormat: string
+    Set the file format for the log file.
+    Default: "json"
+
+profileMode: bool
+    Set whether performance profiling mode is enabled.
+    Default: false
+
+seed: int
+    Set the seed value for the random number generator.
+    Note: Value of -1 causes simulation to generate a random seed.
+    Note: Reusing a seed ensures deterministic simulation outcomes.
+    Default: -1
+
+startingPosition: string
+    Set the starting position of pieces on the board.
+    Options: "classical"
+    Default: "classical"
+
+timesteps: int
+    Set the number of timesteps the simulation runs.
+    Note: Value of -1 causes simulation to run forever or until there are no more living agents.
+    Default: 200
+
+Other JSON Configurable Options:
+decisionModels: [[string, ...], ...]
+    Set the agent decision models to be tested in data collection.
+    Default: [["none"]]
+
+jobUpdateFrequency: int
+    Set the frequency at which the number of remaining jobs is reported.
+    Default: 5
+
+numParallelSimJobs: int
+    Set the number of simulations to run in parallel during data collection.
+    Default: 1
+
+numSeeds: int
+    Set the number of random seeds to be tested in data collection.
+    Default: 100
+
+plots: [string, ...]
+    Set the plots to be created once data has been collected.
+    Options: None
+    Default: []
+
+plotStatistic: string
+    Set the statistic to use for plotting.
+    Options: "mean", "median"
+    Default: "mean"
+
+plotTimesteps: int
+    Set the number of timesteps to plot in graphs as the X axis.
+    Note: This option does not control how many timesteps the simulation runs.
+    Default: 1000
+
+pythonAlias: string
+    Set the alias to the local Python 3 installation.
+    Note: Python 3 is required to run the simulation.
+    Default: "python"

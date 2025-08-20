@@ -27,6 +27,6 @@
         "screenshots": false,
         "seed": -1,
         "startingPosition": "classical",
-        "timesteps": 1000
+        "timesteps": 100
     }
 }

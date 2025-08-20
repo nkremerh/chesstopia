@@ -62,30 +62,39 @@ class Chesstopia:
             self.whitePieces.append(piece)
 
     def configureBoard(self, height, width, startingPosition, boardFile=None):
-        self.board = [[None for j in range(height)]for i in range(width)]
+        self.board = [[None for j in range(width)]for i in range(height)]
+        kingFile = math.floor(len(self.board[0]) / 2)
+        queenFile = kingFile - 1
+        leftBishopFile = queenFile - 1
+        rightBishopFile = kingFile + 1
+        leftKnightFile = leftBishopFile - 1
+        rightKnightFile = rightBishopFile + 1
+        leftRookFile = leftKnightFile - 1
+        rightRookFile = rightKnightFile + 1
+
         if boardFile == None:
-            for i in range(width):
+            for i in range(height):
                 color = None
                 if i < 2:
                     color = "black"
                 elif i > 5:
                     color = "white"
-                for j in range(height):
+                for j in range(width):
                     if color == None:
                         continue
                     configuration = None
                     timestep = 0
-                    if i == 1 or i == 6:
+                    if height > 3 and (i == 1 or i == height - 2):
                         self.board[i][j] = piece.Pawn(self.nextPieceID, timestep, color, (i, j), configuration, self)
-                    elif (i == 0 or i == 7) and (j == 0 or j == 7):
+                    elif (i == 0 or i == height - 1) and (j == leftRookFile or j == rightRookFile):
                         self.board[i][j] = piece.Rook(self.nextPieceID, timestep, color, (i, j), configuration, self)
-                    elif (i == 0 or i == 7) and (j == 1 or j == 6):
+                    elif (i == 0 or i == height - 1) and (j == leftKnightFile or j == rightKnightFile):
                         self.board[i][j] = piece.Knight(self.nextPieceID, timestep, color, (i, j), configuration, self)
-                    elif (i == 0 or i == 7) and (j == 2 or j == 5):
+                    elif (i == 0 or i == height - 1) and (j == leftBishopFile or j == rightBishopFile):
                         self.board[i][j] = piece.Bishop(self.nextPieceID, timestep, color, (i, j), configuration, self)
-                    elif (i == 0 or i == 7) and j == 3:
+                    elif (i == 0 or i == height - 1) and j == queenFile:
                         self.board[i][j] = piece.Queen(self.nextPieceID, timestep, color, (i, j), configuration, self)
-                    elif (i == 0 or i == 7) and j == 4:
+                    elif (i == 0 or i == height - 1) and j == kingFile:
                         self.board[i][j] = piece.King(self.nextPieceID, timestep, color, (i, j), configuration, self)
                     self.nextPieceID += 1
                     self.addPiece(self.board[i][j])
@@ -106,7 +115,7 @@ class Chesstopia:
         if self.timestep >= self.maxTimestep:
             self.toggleEnd()
             return
-        if "all" in self.debug or "sugarscape" in self.debug:
+        if "all" in self.debug or "chesstopia" in self.debug:
             print(f"Timestep: {self.timestep}\nLiving Pieces: {len(self.pieces)}")
         self.timestep += 1
         if self.end == True or (len(self.pieces) == 0 and self.keepAlive == False):
@@ -123,7 +132,7 @@ class Chesstopia:
                 turnOrder.append(self.blackPieces[i])
                 i += 1
             while i < len(biggerSide):
-                turnOrder.append(self.biggerSide[i])
+                turnOrder.append(biggerSide[i])
                 i += 1
             for piece in turnOrder:
                 piece.doTimestep(self.timestep)
@@ -137,15 +146,6 @@ class Chesstopia:
     def endLog(self):
         if self.log == None:
             return
-        # Update total wealth accumulation to include still living pieces at simulation end
-        boardWealthCreated = 0
-        boardWealthTotal = 0
-        for i in range(self.board.width):
-            for j in range(self.board.height):
-                boardWealthCreated += self.board.grid[i][j].sugarLastProduced + self.board.grid[i][j].spiceLastProduced
-                boardWealthTotal += self.board.grid[i][j].sugar + self.board.grid[i][j].spice
-        self.runtimeStats["boardWealthCreated"] = boardWealthCreated
-        self.runtimeStats["boardWealthTotal"] = boardWealthTotal
         logString = '\t' + json.dumps(self.runtimeStats) + "\n]"
         if self.logFormat == "csv":
             logString = ""
@@ -163,7 +163,7 @@ class Chesstopia:
     def endSimulation(self):
         self.removeDeadPieces()
         self.endLog()
-        if "all" in self.debug or "sugarscape" in self.debug:
+        if "all" in self.debug or "chesstopia" in self.debug:
             print(str(self))
         exit(0)
 
@@ -179,12 +179,12 @@ class Chesstopia:
 
     def printBoard(self):
         string = ""
-        for i in range(self.boardWidth):
+        for i in range(self.boardHeight):
             color = self.black
             if i % 2 == 0:
                 color = self.white
             previousColor = None
-            for j in range(self.boardHeight):
+            for j in range(self.boardWidth):
                 if previousColor == self.black:
                     color = self.white
                 elif previousColor == self.white:
@@ -375,15 +375,8 @@ def parseConfiguration(configFile, configuration):
     file = open(configFile)
     options = json.loads(file.read())
     # If using the top-level config file, access correct JSON object
-    if "sugarscapeOptions" in options:
-        options = options["sugarscapeOptions"]
-
-    # Keep compatibility with outdated configuration files
-    optkeys = options.keys()
-    if "pieceEthicalTheory" in optkeys:
-        options["pieceDecisionModel"] = options["pieceEthicalTheory"]
-    if "pieceEthicalFactor" in optkeys:
-        options["pieceDecisionModelFactor"] = options["pieceEthicalFactor"]
+    if "chesstopiaOptions" in options:
+        options = options["chesstopiaOptions"]
 
     for opt in configuration:
         if opt in options:
@@ -412,7 +405,7 @@ def parseOptions(configuration):
     return configuration
 
 def printHelp():
-    print("Usage:\n\tpython sugarscape.py --conf config.json\n\nOptions:\n\t-c,--conf\tUse specified config file for simulation settings.\n\t-h,--help\tDisplay this message.")
+    print("Usage:\n\tpython chesstopia.py --conf config.json\n\nOptions:\n\t-c,--conf\tUse specified config file for simulation settings.\n\t-h,--help\tDisplay this message.")
     exit(0)
 
 def sortConfigurationTimeframes(configuration, timeframe):
@@ -425,16 +418,16 @@ def sortConfigurationTimeframes(configuration, timeframe):
             swap = start
             start = end
             end = swap
-            if "all" in configuration["debugMode"] or "sugarscape" in configuration["debugMode"] or "board" in configuration["debugMode"]:
+            if "all" in configuration["debugMode"] or "chesstopia" in configuration["debugMode"] or "board" in configuration["debugMode"]:
                 print(f"Start and end values provided for {timeframe} in incorrect order. Switching values around.")
         # If provided a negative value, assume the start timestep is the very first of the simulation
         if start < 0:
-            if "all" in configuration["debugMode"] or "sugarscape" in configuration["debugMode"] or "board" in configuration["debugMode"]:
+            if "all" in configuration["debugMode"] or "chesstopia" in configuration["debugMode"] or "board" in configuration["debugMode"]:
                 print(f"Start timestep {start} for {timeframe} is invalid. Setting {timeframe} start timestep to 0.")
             start = 0
         # If provided a negative value, assume the end timestep is the very end of the simulation
         if end < 0:
-            if "all" in configuration["debugMode"] or "sugarscape" in configuration["debugMode"] or "board" in configuration["debugMode"]:
+            if "all" in configuration["debugMode"] or "chesstopia" in configuration["debugMode"] or "board" in configuration["debugMode"]:
                 print(f"End timestep {end} for {timeframe} is invalid. Setting {timeframe} end timestep to {configuration['timesteps']}.")
             end = configuration["timesteps"]
         config = [start, end]
@@ -497,6 +490,18 @@ def verifyConfiguration(configuration):
         if "all" in configuration["debugMode"] or "piece" in configuration["debugMode"]:
             print(f"Cannot provide separate log stats for experimental group {configuration['experimentalGroup']}. Disabling separate log stats.")
         configuration["experimentalGroup"] = None
+
+    widths = [1, 2, 4, 6, 8]
+    if configuration["boardWidth"] not in widths:
+        minIndex = min(range(len(widths)), key=lambda i: abs(widths[i] - configuration["boardWidth"]))
+        configuration["boardWidth"] = widths[minIndex]
+    elif configuration["boardWidth"] < 1:
+        configuration["boardWidth"] = 1
+    if configuration["boardHeight"] > 12:
+        configuration["boardHeight"] = 12
+    elif configuration["boardHeight"] < 3:
+        configuration["boardHeight"] = 3
+
     return configuration
 
 if __name__ == "__main__":
@@ -515,7 +520,7 @@ if __name__ == "__main__":
                      "screenshots": False,
                      "seed": -1,
                      "startingPosition": "classical",
-                     "timesteps": 5
+                     "timesteps": 2
                      }
     configuration = parseOptions(configuration)
     configuration = verifyConfiguration(configuration)

@@ -112,7 +112,7 @@ class Piece:
             else:
                 bestSquare = greedyBestSquare
             if "all" in self.debug or "agent" in self.debug:
-                print(f"Agent {self.ID} could not find an ethical square")
+                print(f"Agent {self} could not find an ethical square")
         return bestSquare
 
     def findSquaresInRange(self):
@@ -193,7 +193,8 @@ class Piece:
     def moveToBestSquare(self):
         bestSquare = self.findBestSquare()
         if "all" in self.debug or "agent" in self.debug:
-            print(f"Agent {self.ID} moving to ({bestSquare.x},{bestSquare.y})")
+            print(f"Agent {self} moving to ({bestSquare.x},{bestSquare.y})")
+        print(f"Agent {self} moving from {self.square} to {bestSquare}.")
         self.gotoSquare(bestSquare)
 
     def printSquareScores(self, squares):
